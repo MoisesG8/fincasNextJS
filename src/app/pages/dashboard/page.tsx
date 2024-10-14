@@ -2,19 +2,44 @@
 
 import Link from 'next/link';
 import styles from './dashboard.module.css';
-import { useAuth } from '../../../context/AuthContext';
-
+import { AuthContextV2 } from '@/context/AuthContextV2';
+import { useContext } from "react";
+import { eliminarCookie, setCookie } from '@/app/services/funciones';
+import Swal from 'sweetalert2';
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  /*Contexto*/
+  const { user, acceso, setAcceso } = useContext(AuthContextV2);
 
-  // Verifica si los datos del usuario están llegando correctamente
-  console.log('Usuario autenticado:', user);
+
+  const cerrarSesion = () => {
+    eliminarCookie("auth")
+    eliminarCookie("user")
+    setAcceso(false)
+  }
+
+  const confirmarCerrarSesion = () => {
+    Swal.fire({
+      title: 'Cerrar Sesión',
+      text: 'Desea cerrar session?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        cerrarSesion()
+      } 
+    });
+  }
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Bienvenido, {user?.nombre}</h1>
         <p>Administre de forma eficiente sus fincas</p>
+        <button class="btn-cerrar-sesion" onClick={() => { confirmarCerrarSesion() }}>Cerrar sesión</button>
       </div>
       <div className={styles.userInfo}>
         <h2>Información de cuenta</h2>

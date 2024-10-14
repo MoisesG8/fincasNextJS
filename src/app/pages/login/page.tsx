@@ -3,55 +3,83 @@
 
 import styles from './login.module.css';
 import { login as authLogin } from '../../services/authService';
-import { useState } from 'react';
+import { useState,useContext } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../../context/AuthContext'; // Importa el contexto de autenticación
-
+//import { useAuth } from '../../../context/AuthContext'; // Importa el contexto de autenticación
+import Swal from 'sweetalert2';
+import { myFetch, setCookie } from '@/app/services/funciones';
+import { AuthContextV2 } from '@/context/AuthContextV2';
 export default function Login() {
-  const { login } = useAuth(); // Usa el contexto de autenticación
+    /*Contexto*/
+    const {acceso,setAcceso,setUser  } = useContext(AuthContextV2);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await login(email, password);
-      router.push('/dashboard');
-    } catch (error) {
-      setErrorMessage('Credenciales incorrectas. Por favor, inténtelo de nuevo.');
+
+  const iniciarSesion = async () => {
+
+    if (email.trim() == '' || password.trim() == '') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Acceso denegado',
+        text: 'Todos los campos son obligatorios',
+        confirmButtonColor: '#db320e',
+      });
+      return
     }
-  };
+
+    const respuesta = await myFetch("http://localhost:8080/api/auth/login", "POST", {
+      "email": email,
+      "password": password
+    })
+    if(respuesta && respuesta?.token !=null){
+      setCookie("auth",respuesta?.token,1)
+      setCookie("user",JSON.stringify( respuesta?.productorResponse),1)
+      setAcceso(true)
+      setUser(respuesta?.productorResponse)
+    }else{
+      Swal.fire({
+        icon: 'error',
+        title: 'Acceso denegado',
+        text: 'Credenciales invalidas',
+        confirmButtonColor: '#db320e',
+      });
+      return
+    }
+
+  }
+
 
   return (
     <div className={styles.container}>
       <div className={styles.loginBox}>
         <h1>Administre de forma eficiente sus fincas</h1>
-        <form onSubmit={handleSubmit}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="email">Correo Electrónico</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          {errorMessage && <div className={styles.error}>{errorMessage}</div>}
-          <button type="submit" className={styles.loginButton}>Iniciar sesión</button>
-        </form>
+
+        <div className={styles.inputGroup}>
+          <label htmlFor="email">Correo Electrónico</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className={styles.inputGroup}>
+          <label htmlFor="password">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        {errorMessage && <div className={styles.error}>{errorMessage}</div>}
+        <button className={styles.loginButton} onClick={() => { iniciarSesion() }}>Iniciar sesión</button>
+
       </div>
     </div>
   );
