@@ -4,12 +4,13 @@ import Link from 'next/link';
 import styles from './dashboard.module.css';
 import { AuthContextV2 } from '@/context/AuthContextV2';
 import { useContext } from "react";
-import { eliminarCookie, setCookie } from '@/app/services/funciones';
+import { eliminarCookie, setCookie } from '@/app/services/funcionesService';
 import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
 export default function Dashboard() {
   /*Contexto*/
   const { user, acceso, setAcceso } = useContext(AuthContextV2);
-
+  const router = useRouter();
 
   const cerrarSesion = () => {
     eliminarCookie("auth")
@@ -30,7 +31,8 @@ export default function Dashboard() {
     }).then((result) => {
       if (result.isConfirmed) {
         cerrarSesion()
-      } 
+        router.push('/pages/login')
+      }
     });
   }
 

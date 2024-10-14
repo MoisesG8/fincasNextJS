@@ -2,16 +2,17 @@
 "use client"
 import './globals.css';
 import React, { useState, useEffect } from "react";
-//import { AuthProvider } from '../context/AuthContext';
 import { AuthContextV2 } from '@/context/AuthContextV2';
+import { useRouter } from 'next/navigation';
 import Login from './pages/login/page';
 import Dashboard from './pages/dashboard/page';
+import FarmList from './pages/finca/page';
 
-import { eliminarCookie, getCookie, isTokenValid, setCookie } from './services/funciones';
+import { eliminarCookie, getCookie, isTokenValid, setCookie } from './services/funcionesService';
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-
+  const router = useRouter();
   const [acceso, setAcceso] = useState(false);
   const [user, setUser] = useState(false);
   
@@ -25,14 +26,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       if(esValida){
         setAcceso(true)
         setUser(JSON.parse(galletaUser))
+        router.push('/pages/dashboard');
       }else{
         setAcceso(false)
         eliminarCookie("auth")
         eliminarCookie("user")
+        router.push('/pages/login'); // Redirige a login si el token no es válido
       }
      }else{
       //sin acceso
       setAcceso(false)
+      router.push('/pages/login'); // Redirige a login si no hay token
      }
   }, [])
 
@@ -42,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AuthContextV2.Provider value={{ acceso, setAcceso, user, setUser }} >
           {
-            acceso ? <Dashboard /> : <Login />
+            children
           }
         </AuthContextV2.Provider>
       </body>

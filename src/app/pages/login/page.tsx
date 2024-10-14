@@ -2,16 +2,16 @@
 'use client';
 
 import styles from './login.module.css';
-import { login as authLogin } from '../../services/authService';
-import { useState,useContext } from 'react';
+
+import { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 //import { useAuth } from '../../../context/AuthContext'; // Importa el contexto de autenticación
 import Swal from 'sweetalert2';
-import { myFetch, setCookie } from '@/app/services/funciones';
+import { myFetch, setCookie } from '@/app/services/funcionesService';
 import { AuthContextV2 } from '@/context/AuthContextV2';
 export default function Login() {
-    /*Contexto*/
-    const {acceso,setAcceso,setUser  } = useContext(AuthContextV2);
+  /*Contexto*/
+  const { acceso, setAcceso, setUser } = useContext(AuthContextV2);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -34,12 +34,13 @@ export default function Login() {
       "email": email,
       "password": password
     })
-    if(respuesta && respuesta?.token !=null){
-      setCookie("auth",respuesta?.token,1)
-      setCookie("user",JSON.stringify( respuesta?.productorResponse),1)
+    if (respuesta && respuesta?.token != null) {
+      setCookie("auth", respuesta?.token, 1)
+      setCookie("user", JSON.stringify(respuesta?.productorResponse), 1)
       setAcceso(true)
       setUser(respuesta?.productorResponse)
-    }else{
+      router.push('/pages/dashboard')
+    } else {
       Swal.fire({
         icon: 'error',
         title: 'Acceso denegado',
@@ -49,6 +50,10 @@ export default function Login() {
       return
     }
 
+  }
+
+  const irARegistro=()=>{
+    router.push('/pages/register')
   }
 
 
@@ -78,7 +83,8 @@ export default function Login() {
           />
         </div>
         {errorMessage && <div className={styles.error}>{errorMessage}</div>}
-        <button className={styles.loginButton} onClick={() => { iniciarSesion() }}>Iniciar sesión</button>
+        <button style={{width:160}} className={styles.loginButton} onClick={() => { iniciarSesion() }}>Iniciar sesión</button>&nbsp;&nbsp;
+        <button style={{width:160}} className={styles.loginButton} onClick={() => { irARegistro() }}>Registro</button>
 
       </div>
     </div>
