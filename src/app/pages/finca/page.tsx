@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import styles from './finca.module.css';
 import { getFarms, deleteFarm } from '../../services/farmService';
 import { useRouter } from 'next/navigation';
-import { myFetch, myFetchGET } from '@/app/services/funcionesService';
+import { myFetch, myFetchGET,getCookie } from '@/app/services/funcionesService';
 import Swal from 'sweetalert2';
 interface Farm {
   id: number;
@@ -101,7 +101,14 @@ export default function FarmList() {
 
 
   const getFincas = async () => {
-    const res: Farm[] = await myFetchGET("http://localhost:8080/api/v1/getAllFincas")
+    const galletaUser = getCookie('user')
+    let id = 0
+    if (galletaUser != null) {
+      const User = JSON.parse(galletaUser)
+      
+      id = User.id
+    }
+    const res: Farm[] = await myFetchGET("http://localhost:8080/api/v1/getFincasDeProductor/"+id)
     if (res) {
       setFarms(res)
     }

@@ -1,112 +1,132 @@
 'use client';
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import styles from './finca.cultivos.module.css';
 import { useSearchParams } from 'next/navigation';
-
+import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
+import { myFetch, myFetchGET } from '@/app/services/funcionesService';
 interface Cultivo {
-  id: number;
+  finca_id: any;
   variedad: string;
   estado: string;
-  fechaSiembra: Date
-  produccion: {
-    cantidad: number;
-    unidad: string;
-    fechaCosecha: Date
-  };
+  fecha: string
 }
 
 export default function CultivoManager() {
+  const router = useRouter();
   const [cultivo, setCultivo] = useState<Cultivo>({
-    id: 0,
+    finca_id: 0,
     variedad: '',
     estado: '',
-    fechaSiembra: new Date(),
-    produccion: {
-      cantidad: 0,
-      unidad: '',
-      fechaCosecha: new Date()
-    },
+    fecha: ''
   });
 
   const searchParams = useSearchParams();
-  const id = searchParams.get('farmId'); 
-  console.log('idddd '+id)
+  const id = searchParams.get('farmId');
 
-  
   const [cultivos, setCultivos] = useState<Cultivo[]>([]);
   const [isEditing, setIsEditing] = useState(false);
 
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
-    
-    if (name === 'cantidad' || name === 'unidad'|| name === 'fechaSiembra') {
-      if (name === 'fechaSiembra') {
-        setCultivo((prev) => ({
-          ...prev,
-          produccion: { ...prev.produccion, [name]: new Date(value) },
-        }));
-      }else{
-      setCultivo((prev) => ({
-        ...prev,
-        produccion: { ...prev.produccion, [name]: value },
-      }));
-    }
-    }else  if (name === 'fechaSiembra') {
-      setCultivo((prev) => ({ ...prev, [name]: new Date(value) }));
-    }else {
-      setCultivo((prev) => ({ ...prev, [name]: value }));
-    }
+    setCultivo((prev) => ({ ...prev, [name]: value }));
   };
 
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
 
-    if (isEditing) {
-      
-      const updatedCultivos = cultivos.map((c) =>
-        c.id === cultivo.id ? cultivo : c
-      );
-      setCultivos(updatedCultivos);
-      setIsEditing(false); 
+
+  const handleDelete = async(id: number) => {
+    const respuesta = await myFetch("http://localhost:8080/api/v1/deleteCultivo/" + id, "DELETE", {})
+    if (respuesta?.estado == "exito") {
+      Swal.fire({
+        icon: 'success',
+        title: 'Eliminar',
+        text: 'El registro ha sido eliminado exitosamente',
+        confirmButtonColor: '#6b4226',
+      });
+      obtenerCultivosXFinca();
     } else {
-      
-      setCultivos([...cultivos, { ...cultivo, id: Date.now() }]);
+      Swal.fire({
+        icon: 'error',
+        title: 'Eliminar',
+        text: 'El registro no fue eliminado',
+        confirmButtonColor: '#6b4226',
+      });
     }
+  };
 
+  const agregarCultivo = async() => {
+    cultivo.finca_id = searchParams.get('farmId');
+    if (!validarObjeto(cultivo)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Registro',
+        text: 'Todos los campos son obligatorios',
+        confirmButtonColor: '#db320e',
+      });
+      return
+    }
+    const respuesta = await myFetch("http://localhost:8080/api/v1/addCultivo", "POST", cultivo)
+    if (respuesta?.estado == "exito") {
+      Swal.fire({
+        icon: 'success',
+        title: 'Registro',
+        text: 'Cultivo registrado correctamente.',
+        confirmButtonColor: '#db320e',
+      });
+      router.back();
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Registro',
+        text: 'Error al registrar el cultivo',
+        confirmButtonColor: '#db320e',
+      });
+      return
+    }
+  }
+
+  const validarObjeto = (obj) => {
     
-    setCultivo({
-      id: 0,
-      variedad: '',
-      estado: '',
-      fechaSiembra: new Date(),
-      produccion: {
-        cantidad: 0,
-        unidad: '',
-        fechaCosecha: new Date()
-      },
+    for (const key in obj) {
+      if (obj[key] === "") {
+        return false; // Devuelve false si se encuentra un campo vacío
+      }
+    }
+    return true; // Devuelve true si todos los campos están llenos
+  };
+
+  useEffect(() => {
+    obtenerCultivosXFinca();
+  },[])
+
+  const confirmarEliminarCultivo = (id:number) => {
+    Swal.fire({
+      title: 'Eliminar',
+      text: 'Desea eliminar el cultivo?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDelete(id)
+      }
     });
-  };
+  }
 
-  
-  const handleEdit = (cultivo: Cultivo) => {
-    setCultivo(cultivo);
-    setIsEditing(true); 
-  };
-
-  
-  const handleDelete = (id: number) => {
-    const updatedCultivos = cultivos.filter((c) => c.id !== id);
-    setCultivos(updatedCultivos);
-  };
-
+  const obtenerCultivosXFinca= async()=>{
+    const respuesta = await myFetchGET("http://localhost:8080/api/v1/getCultivosXFinca/"+id)
+    setCultivos(respuesta)
+    
+  }
   return (
     <div className={styles.container}>
       <h2>{isEditing ? 'Editar Cultivo' : 'Registrar Cultivo'}</h2>
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.form}>
         <div className={styles.inputGroup}>
           <label>Variedad:</label>
           <input
@@ -131,16 +151,20 @@ export default function CultivoManager() {
             <option value="Sembrado">Sembrado</option>
           </select>
         </div>
-        <div className={styles.inputGroup}>
-          <label>Producción:</label>
-          <input
-            type="number"
-            name="cantidad"
-            value={cultivo.produccion.cantidad}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        {
+          /*
+          <div className={styles.inputGroup}>
+            <label>Producción:</label>
+            <input
+              type="number"
+              name="cantidad"
+              value={cultivo.produccion.cantidad}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        
+
         <div className={styles.inputGroup}>
           <label>Unidad:</label>
           <input
@@ -151,40 +175,43 @@ export default function CultivoManager() {
             required
           />
         </div>
+          */
+        }
         <div className={styles.inputGroup}>
           <label>fecha siembra:</label>
           <input
             type="date"
-            name="fechaSiembra"
+            name="fecha"
             onChange={handleChange}
             required
           />
         </div>
-        <div className={styles.inputGroup}>
-          <label>fecha cosecha:</label>
-          <input
-            type="date"
-            name="fechaCosecha"
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button className={styles.button} type="submit">
+        {
+          /*
+            <div className={styles.inputGroup}>
+              <label>fecha cosecha:</label>
+              <input
+                type="date"
+                name="fechaCosecha"
+                onChange={handleChange}
+                required
+              />
+            </div>
+            */
+        }
+        <button className={styles.button} onClick={() => { agregarCultivo() }}>
           {isEditing ? 'Guardar' : 'Registrar'}
         </button>
-      </form>
+      </div>
 
       <h3>Lista de Cultivos</h3>
       <ul className={styles.list}>
         {cultivos.map((c) => (
-          <li key={c.id}>
-            <strong>{c.variedad}</strong> ({c.estado}) - {c.produccion.cantidad}{' '}
-            {c.produccion.unidad} fecha siembra: {c.fechaSiembra.toLocaleDateString()} fecha cosecha: {c.produccion.fechaCosecha.toLocaleDateString()}
+          <li key={c.cultivoId}>
+            <strong>{c.variedad}</strong> ({c.estado}) - {' '}
+             fecha siembra: {c.fechaSiembra} 
             <div className={styles.actions}>
-              <button onClick={() => handleEdit(c)} className={styles.editButton}>
-                Editar
-              </button>
-              <button onClick={() => handleDelete(c.id)} className={styles.deleteButton}>
+              <button onClick={() => confirmarEliminarCultivo(c.cultivoId)} className={styles.deleteButton}>
                 Eliminar
               </button>
             </div>
