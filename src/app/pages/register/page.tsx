@@ -27,7 +27,7 @@ export default function Register() {
   };
 
   const validarObjeto = (obj) => {
-    console.log("--",obj )
+    console.log("--", obj)
     for (const key in obj) {
       if (obj[key] === "") {
         return false; // Devuelve false si se encuentra un campo vacío
@@ -38,17 +38,17 @@ export default function Register() {
 
   const registrar = async () => {
 
-    if(!validarObjeto(formData)){
+    if (!validarObjeto(formData)) {
       Swal.fire({
         icon: 'error',
-        title: 'Acceso denegado',
+        title: 'Registro',
         text: 'Todos los campos son obligatorios',
         confirmButtonColor: '#db320e',
       });
       return
     }
     const respuesta = await myFetch("http://localhost:8080/api/v1/addProductor", "POST", formData)
-    if(respuesta && respuesta?.id !==null){
+    if (respuesta && respuesta?.id !== null) {
       Swal.fire({
         icon: 'success',
         title: 'Registro',
@@ -56,11 +56,11 @@ export default function Register() {
         confirmButtonColor: '#db320e',
       });
       router.push("/pages/login")
-    }else{
+    } else {
       Swal.fire({
         icon: 'error',
-        title: 'Acceso denegado',
-        text: 'Credenciales invalidas',
+        title: 'Registro',
+        text: 'Error al registrar el productor',
         confirmButtonColor: '#db320e',
       });
       return
@@ -72,16 +72,16 @@ export default function Register() {
       <div className={styles.registerBox}>
         <h1 className={styles.h1}>Registro de Productor</h1>
         <div className={styles.inputGroup}>
-          <label htmlFor="name">Nombre</label>
-          <input type="text" id="name" name="name" value={formData.nombre} onChange={handleChange} required />
+          <label htmlFor="nombre">Nombre</label>
+          <input type="text" id="nombre" name="nombre" value={formData.nombre} onChange={handleChange} required />
         </div>
         <div className={styles.inputGroup}>
-          <label htmlFor="lastname">Apellido</label>
-          <input type="text" id="lastname" name="lastname" value={formData.apellido} onChange={handleChange} required />
+          <label htmlFor="apellido">Apellido</label>
+          <input type="text" id="apellido" name="apellido" value={formData.apellido} onChange={handleChange} required />
         </div>
         <div className={styles.inputGroup}>
-          <label htmlFor="user">Usuario</label>
-          <input type="text" id="user" name="user" value={formData.usuario} onChange={handleChange} required />
+          <label htmlFor="usuario">Usuario</label>
+          <input type="text" id="usuario" name="usuario" value={formData.usuario} onChange={handleChange} required />
         </div>
         <div className={styles.inputGroup}>
           <label htmlFor="email">Correo Electrónico</label>
@@ -92,15 +92,17 @@ export default function Register() {
           <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required />
         </div>
         <div className={styles.inputGroup}>
-          <label htmlFor="location">Ubicación</label>
-          <input type="text" id="location" name="location" value={formData.ubicacion} onChange={handleChange} required />
+          <label htmlFor="ubicacion">Ubicación</label>
+          <input type="text" id="ubicacion" name="ubicacion" value={formData.ubicacion} onChange={handleChange} required />
         </div>
         <div className={styles.inputGroup}>
-          <label htmlFor="contact">Contacto</label>
-          <input type="text" id="contact" name="contact" value={formData.contacto} onChange={handleChange} required />
+          <label htmlFor="contacto">Contacto</label>
+          <input type="text" id="contacto" name="contacto" value={formData.contacto} onChange={handleChange} required />
         </div>
         {errorMessage && <div className={styles.error}>{errorMessage}</div>}
-        <button className={styles.registerButton} onClick={() => { registrar() }}>Registrar</button>
+        <button className={styles.registerButton} onClick={() => { registrar() }}>
+          Registrar
+        </button>
       </div>
     </div>
   );

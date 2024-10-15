@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-export const setCookie = (name: string, token: string, days: number):void => {
+export const setCookie = (name: string, token: string, days: number): void => {
     const d = new Date();
     d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000)); // Convertir días a milisegundos
     const expires = `expires=${d.toUTCString()}`;
@@ -7,7 +7,7 @@ export const setCookie = (name: string, token: string, days: number):void => {
 }
 
 
-export const getCookie=(name: string): string | null => {
+export const getCookie = (name: string): string | null => {
     const cookieArr = document.cookie.split(';');
     for (let i = 0; i < cookieArr.length; i++) {
         const cookiePair = cookieArr[i].trim();
@@ -18,12 +18,12 @@ export const getCookie=(name: string): string | null => {
     return null; // Cookie no encontrada
 }
 
-export const eliminarCookie = (nombre:string) => {
+export const eliminarCookie = (nombre: string) => {
     document.cookie = `${nombre}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
 };
 
 
-export const  isTokenValid=(token: string): boolean => {
+export const isTokenValid = (token: string): boolean => {
     try {
         const decoded = jwt.decode(token) as { exp?: number };
 
@@ -35,7 +35,7 @@ export const  isTokenValid=(token: string): boolean => {
     } catch (error) {
         return false; // Si no hay "exp" o hay un error, consideramos el token inválido
     }
-    
+
 }
 export const myFetch = async <T>(ruta: string, method: string, data: Object): Promise<T> => {
     const config: RequestInit = {
@@ -59,3 +59,21 @@ export const myFetch = async <T>(ruta: string, method: string, data: Object): Pr
         return Promise.reject(error);
     }
 };
+
+
+export const myFetchGET = (ruta: string) => {
+    return new Promise(async function (resolve, reject) {
+        var Config = {
+            method: 'GET',
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            }
+        }
+        await fetch(ruta, Config)
+            .then((respuesta) => respuesta.json())
+            .then((respuestaJson) => resolve(respuestaJson))
+            .catch((error) => reject(error))
+
+    })
+}

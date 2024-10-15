@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import styles from './finca.module.css';
 import { getFarms, deleteFarm } from '../../services/farmService';
 import { useRouter } from 'next/navigation';
-
+import { myFetch, myFetchGET } from '@/app/services/funcionesService';
+import Swal from 'sweetalert2';
 interface Farm {
   id: number;
   nombre: string;
@@ -21,7 +22,8 @@ export default function FarmList() {
   const router = useRouter();
 
   useEffect(() => {
-    fetchFarms();
+    //fetchFarms();
+    getFincas();
   }, []);
 
   const fetchFarms = async () => {
@@ -33,20 +35,46 @@ export default function FarmList() {
     }
   };
 
-  const handleEdit = (farmId: number) => {
-    router.push(`finca/edit?farmId=${farmId}`);
+  const handleEdit = (farm: object) => {
+    router.push(`finca/edit?farmId=${farm.fincaId}&nombre=${farm.nombre}&ubicacion=${farm.ubicacion}&tamanioHectareas=${farm.tamanioHectareas}`);
   };
 
   const handleDelete = async (id: number) => {
-    try {
-      if (confirm('¿Está seguro de que desea eliminar esta finca?')) {
-        await deleteFarm(id);
-        fetchFarms();
+    Swal.fire({
+      title: 'Eliminar',
+      text: 'Desea eliminar la finca?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        eliminarFinca(id)
       }
-    } catch (error) {
-      console.error('Error al eliminar la finca:', error);
-    }
+    });
   };
+
+  const eliminarFinca = async (id: number) => {
+    const respuesta = await myFetch("http://localhost:8080/api/v1/deleteFinca/" + id, "DELETE", {})
+    if (respuesta?.estado == "exito") {
+      Swal.fire({
+        icon: 'success',
+        title: 'Eliminar',
+        text: 'El registro ha sido eliminado exitosamente',
+        confirmButtonColor: '#6b4226',
+      });
+      getFincas()
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Eliminar',
+        text: 'El registro no fue eliminado',
+        confirmButtonColor: '#6b4226',
+      });
+    }
+  }
 
   const handleViewCultivo = (farmId: number) => {
     router.push(`finca/cultivos?farmId=${farmId}`);
@@ -61,7 +89,7 @@ export default function FarmList() {
   };
 
   const handleAddFarm = () => {
-    router.push('finca/create'); 
+    router.push('finca/create');
   };
 
   const indexOfLastFarm = currentPage * farmsPerPage;
@@ -70,10 +98,18 @@ export default function FarmList() {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+
+
+  const getFincas = async () => {
+    const res: Farm[] = await myFetchGET("http://localhost:8080/api/v1/getAllFincas")
+    if (res) {
+      setFarms(res)
+    }
+  }
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Listado de Fincas</h1>
+        <h1 style={{ color: "#FFFFFF" }}>Listado de Fincas</h1>
         <button className={styles.addButton} onClick={handleAddFarm}>Agregar Finca</button>
       </div>
       <table className={styles.table}>
@@ -88,16 +124,16 @@ export default function FarmList() {
         <tbody>
           {currentFarms.length > 0 ? (
             currentFarms.map((farm) => (
-              <tr key={farm.id}>
+              <tr key={farm.fincaId}>
                 <td>{farm.nombre}</td>
                 <td>{farm.ubicacion}</td>
                 <td>{farm.tamanioHectareas}</td>
                 <td className={styles.actions}>
-                  <button className={styles.editButton} onClick={() => handleEdit(farm.id)}>Editar</button>
-                  <button className={styles.deleteButton} onClick={() => handleDelete(farm.id)}>Eliminar</button>
-                  <button className={styles.viewButton} onClick={() => handleViewCultivo(farm.id)}>Cultivos</button>
-                  <button className={styles.viewButton} onClick={() => handleViewInventarios(farm.id)}>Inventario</button>
-                  <button className={styles.viewButton} onClick={() => handleViewPlanificaciones(farm.id)}>Planificaciones</button>
+                  <button className={styles.editButton} onClick={() => handleEdit(farm)}>Editar</button>
+                  <button className={styles.deleteButton} onClick={() => handleDelete(farm.fincaId)}>Eliminar</button>
+                  <button className={styles.viewButton} onClick={() => handleViewCultivo(farm.fincaId)}>Cultivos</button>
+                  <button className={styles.viewButton} onClick={() => handleViewInventarios(farm.fincaId)}>Inventario</button>
+                  <button className={styles.viewButton} onClick={() => handleViewPlanificaciones(farm.fincaId)}>Planificaciones</button>
                 </td>
               </tr>
             ))
