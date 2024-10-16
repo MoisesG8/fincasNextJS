@@ -35,7 +35,6 @@ export default function CultivoManager() {
   };
 
 
-
   const handleDelete = async(id: number) => {
     const respuesta = await myFetch("http://localhost:8080/api/v1/deleteCultivo/" + id, "DELETE", {})
     if (respuesta?.estado == "exito") {

@@ -1,114 +1,135 @@
 'use client';
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import styles from './finca.inventario.module.css';
 import { useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
+import { myFetch, myFetchGET } from '@/app/services/funcionesService';
 
 interface Inventario {
   id: number;
   producto: string;
   cantidad: number;
   unidad: string;
+  finca_id: number;
 }
 
 export default function CultivoManager() {
   // Estado para el formulario de cultivo
-  const [cultivo, setInventario] = useState<Inventario>({
+  const [inventario, setInventario] = useState<Inventario>({
     id: 0,
     producto: '',
     cantidad: 0,
-    unidad:'',
+    unidad: '',
+    finca_id: 0
   });
-
+  const [inventarios, setInventarios] = useState<Inventario[]>([]);
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const id = searchParams.get('farmId'); 
-  console.log('idddd '+id)
+  const id = searchParams.get('farmId');
 
-  const [inventario, setInventarios] = useState<Inventario[]>([]);
+
   const [isEditing, setIsEditing] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
-    
-      setInventario((prev) => ({ ...prev, [name]: value }));
-    
+    setInventario((prev) => ({ ...prev, [name]: value }));
   };
 
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
 
-    if (isEditing) {
-     
-      const updatedInventarios = inventario.map((c) =>
-        c.id === cultivo.id ? cultivo : c
-      );
-      setInventarios(updatedInventarios);
-      setIsEditing(false); 
+  const agregarInventario = async () => {
+    inventario.finca_id = searchParams.get('farmId');
+    if (!validarObjeto(inventario)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Registro',
+        text: 'Todos los campos son obligatorios',
+        confirmButtonColor: '#db320e',
+      });
+      return
+    }
+    const respuesta = await myFetch("http://localhost:8080/api/v1/addInventario", "POST", inventario)
+    if (respuesta?.estado == "exito") {
       Swal.fire({
         icon: 'success',
-        title: 'Guardado',
-        text: 'El registro ha sido guardado exitosamente',
+        title: 'Registro',
+        text: 'Inventario registrado correctamente.',
+        confirmButtonColor: '#db320e',
+      });
+      router.back();
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Registro',
+        text: 'Error al registrar el inventario',
+        confirmButtonColor: '#db320e',
+      });
+      return
+    }
+  }
+  const validarObjeto = (obj) => {
+    for (const key in obj) {
+      if (obj[key] === "") {
+        return false; // Devuelve false si se encuentra un campo vacío
+      }
+    }
+    return true; // Devuelve true si todos los campos están llenos
+  };
+  const obtenerInventarioXFinca= async()=>{
+    const respuesta = await myFetchGET("http://localhost:8080/api/v1/getInventarioXFinca/"+id)
+    setInventarios(respuesta)
+  }
+  const confirmarEliminarInventario = (id:number) => {
+    Swal.fire({
+      title: 'Eliminar',
+      text: 'Desea eliminar el inventario?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDelete(id)
+      }
+    });
+  }
+
+
+  const handleDelete = async(id: number) => {
+    const respuesta = await myFetch("http://localhost:8080/api/v1/deleteInventario/" + id, "DELETE", {})
+    if (respuesta?.estado == "exito") {
+      Swal.fire({
+        icon: 'success',
+        title: 'Eliminar',
+        text: 'El registro ha sido eliminado exitosamente',
         confirmButtonColor: '#6b4226',
       });
+      obtenerInventarioXFinca();
     } else {
-      
-      setInventarios([...inventario, { ...cultivo, id: Date.now() }]);
       Swal.fire({
-        icon: 'success',
-        title: 'Guardado',
-        text: 'El registro ha sido guardado exitosamente',
+        icon: 'error',
+        title: 'Eliminar',
+        text: 'El registro no fue eliminado',
         confirmButtonColor: '#6b4226',
       });
     }
-
-    setInventario({
-      id: 0,
-      producto: '',
-      cantidad: 0,
-      unidad: '',
-    });
   };
-
-  
-  const handleEdit = (inventario: Inventario) => {
-    setInventario(inventario);
-    setIsEditing(true); 
-  };
-
-  
-  const handleDelete = (id: number) => {
-
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'No podrás revertir esta acción',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#e74c3c',
-      cancelButtonColor: '#6b4226',
-      confirmButtonText: 'Sí, eliminar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const updatedCultivos = inventario.filter((c) => c.id !== id);
-    setInventarios(updatedCultivos);
-      }
-    });
-
-    
-  };
-
+  useEffect(() => {
+    obtenerInventarioXFinca();
+  },[])
   return (
     <div className={styles.container}>
-      <h2>{isEditing ? 'Editar Producto' : 'Registrar Producto'}</h2>
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <h2>{isEditing ? 'Editar Producto' : 'Registrar Inventario'}</h2>
+      <div className={styles.form}>
         <div className={styles.inputGroup}>
           <label>producto:</label>
           <input
             type="text"
             name="producto"
-            value={cultivo.producto}
+            value={inventario.producto}
             onChange={handleChange}
             required
           />
@@ -118,37 +139,37 @@ export default function CultivoManager() {
           <input
             type="number"
             name="cantidad"
-            value={cultivo.cantidad}
+            value={inventario.cantidad}
             onChange={handleChange}
             required
           />
         </div>
         <div className={styles.inputGroup}>
           <label>Unidad:</label>
-          <input
-            type="text"
+          <select
             name="unidad"
-            value={cultivo.unidad}
+            value={inventario.unidad}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Seleccione</option>
+            <option value="kg">kg</option>
+            <option value="lb">lb</option>
+          </select>
         </div>
-        <button className={styles.button} type="submit">
+        <button className={styles.button} onClick={() => { agregarInventario() }}>
           {isEditing ? 'Guardar' : 'Registrar'}
         </button>
-      </form>
+      </div>
 
       <h3>Inventario</h3>
       <ul className={styles.list}>
-        {inventario.map((c) => (
+        {inventarios.map((c) => (
           <li key={c.id}>
             <strong>{c.producto}</strong> ({c.cantidad}) - {' '}
             {c.unidad}
             <div className={styles.actions}>
-              <button onClick={() => handleEdit(c)} className={styles.editButton}>
-                Editar
-              </button>
-              <button onClick={() => handleDelete(c.id)} className={styles.deleteButton}>
+              <button onClick={() => confirmarEliminarInventario(c.inventarioId)} className={styles.deleteButton}>
                 Eliminar
               </button>
             </div>
