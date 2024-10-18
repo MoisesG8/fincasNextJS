@@ -42,3 +42,54 @@ body {
 .btn-cerrar-sesion:hover {
   background-color: darkred; /* Color al pasar el mouse */
 }
+
+.swal2-input {
+  width: 84%; /* Ocupa todo el ancho disponible */
+  box-sizing: border-box; /* Incluye padding y border en el ancho */
+  text-align: left; /* Alinea el texto a la izquierda */
+}
+
+.swal2-html-container{
+  display: flex;
+  width: 100%; /* Ocupa todo el ancho disponible */
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box; /* Incluye padding y border en el ancho */
+  text-align:left
+}
+
+.swal2-popup{
+  width: 40em;
+}
+
+
+.input-custom {
+  width: calc(100% - 20px); /* Resta margen */
+  margin: 10px 0; /* Espaciado entre elementos */
+  box-sizing: border-box; /* Incluye padding en el ancho total */
+}
+
+.popup-custom {
+  width: 600px; /* Ajusta el ancho como desees */
+}
+
+.btn-aceptar {
+  background-color: #4CAF50; /* Color verde */
+  color: white; /* Color del texto */
+  border: none; /* Sin borde */
+}
+
+.btn-cancelar {
+  background-color: #f44336; /* Color rojo */
+  color: white; /* Color del texto */
+  border: none; /* Sin borde */
+}
+
+/* Opcional: Cambiar el color al pasar el mouse */
+.btn-aceptar:hover {
+  background-color: #45a049; /* Color verde más oscuro */
+}
+
+.btn-cancelar:hover {
+  background-color: #d32f2f; /* Color rojo más oscuro */
+}
