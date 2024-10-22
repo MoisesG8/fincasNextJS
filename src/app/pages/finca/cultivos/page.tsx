@@ -74,7 +74,7 @@ export default function CultivoManager() {
         text: 'Cultivo registrado correctamente.',
         confirmButtonColor: '#db320e',
       });
-      router.back();
+      obtenerCultivosXFinca();
     } else {
       Swal.fire({
         icon: 'error',

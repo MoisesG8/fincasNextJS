@@ -57,7 +57,7 @@ export default function CultivoManager() {
         text: 'Inventario registrado correctamente.',
         confirmButtonColor: '#db320e',
       });
-      router.back();
+      obtenerInventarioXFinca();
     } else {
       Swal.fire({
         icon: 'error',
@@ -153,6 +153,7 @@ export default function CultivoManager() {
             required
           >
             <option value="">Seleccione</option>
+            <option value="q">q</option>
             <option value="kg">kg</option>
             <option value="lb">lb</option>
           </select>

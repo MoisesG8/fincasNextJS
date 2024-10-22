@@ -13,14 +13,6 @@ interface Planificacion {
   fecha_fin: Date;
   estado: string;
 }
-/*
-interface Seguimiento {
-  id: number;
-  planificacionId: number;
-  fecha: Date;
-  actividadRealizada: string;
-  observaciones: string;
-}*/
 
 export default function PlanificacionesManager() {
   const router = useRouter();
@@ -39,15 +31,7 @@ export default function PlanificacionesManager() {
   const [planificaciones, setPlanificaciones] = useState<Planificacion[]>([]);
 
   const [isEditing, setIsEditing] = useState(false);
-  /*
-    const [newSeguimiento, setNewSeguimiento] = useState<Seguimiento>({
-      id: 0,
-      planificacionId: 0,
-      fecha: new Date(),
-      actividadRealizada: '',
-      observaciones: ''
-    });
-  */
+
   const searchParams = useSearchParams();
   const id = searchParams.get('farmId');
 
@@ -190,7 +174,8 @@ export default function PlanificacionesManager() {
         text: 'Planificacion registrada correctamente.',
         confirmButtonColor: '#db320e',
       });
-      router.back();
+      obtenerPlanificacionXFinca();
+      //router.back();
     } else {
       Swal.fire({
         icon: 'error',

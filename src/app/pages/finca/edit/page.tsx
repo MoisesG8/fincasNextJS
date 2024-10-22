@@ -46,7 +46,6 @@ export default function Finca() {
         text: 'El registro se actualizo exitosamente',
         confirmButtonColor: '#6b4226',
       });
-
       router.back();
     }else{
       Swal.fire({

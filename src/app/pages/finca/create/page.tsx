@@ -19,19 +19,6 @@ export default function Finca() {
     setFinca({ ...finca, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    e.preventDefault();
-    Swal.fire({
-      icon: 'success',
-      title: 'Guardado',
-      text: 'El registro ha sido guardado exitosamente',
-      confirmButtonColor: '#6b4226',
-    });
-
-    router.back();
-  };
-
   const guardarFinca = async () => {
     const galletaUser = getCookie('user')
     let id = 0
@@ -48,7 +35,6 @@ export default function Finca() {
           text: 'El registro ha sido guardado exitosamente',
           confirmButtonColor: '#6b4226',
         });
-
         router.back();
       } else {
         Swal.fire({
