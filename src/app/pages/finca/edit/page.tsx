@@ -38,7 +38,7 @@ export default function Finca() {
       "fechaRegistro": "",
       "productorid": id
     }
-    const respuesta = await myFetch("http://localhost:8080/api/v1/editFinca", "POST", objetoPeticion)
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/editFinca", "POST", objetoPeticion)
     if(respuesta?.estado=="exito"){
       Swal.fire({
         icon: 'success',

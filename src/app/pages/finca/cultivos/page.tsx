@@ -36,7 +36,7 @@ export default function CultivoManager() {
 
 
   const handleDelete = async(id: number) => {
-    const respuesta = await myFetch("http://localhost:8080/api/v1/deleteCultivo/" + id, "DELETE", {})
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/deleteCultivo/" + id, "DELETE", {})
     if (respuesta?.estado == "exito") {
       Swal.fire({
         icon: 'success',
@@ -66,7 +66,7 @@ export default function CultivoManager() {
       });
       return
     }
-    const respuesta = await myFetch("http://localhost:8080/api/v1/addCultivo", "POST", cultivo)
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/addCultivo", "POST", cultivo)
     if (respuesta?.estado == "exito") {
       Swal.fire({
         icon: 'success',
@@ -118,7 +118,7 @@ export default function CultivoManager() {
   }
 
   const obtenerCultivosXFinca= async()=>{
-    const respuesta = await myFetchGET("http://localhost:8080/api/v1/getCultivosXFinca/"+id)
+    const respuesta = await myFetchGET("https://backnextjs-main-production.up.railway.app/api/v1/getCultivosXFinca/"+id)
     setCultivos(respuesta)
     
   }

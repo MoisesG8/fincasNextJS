@@ -49,7 +49,7 @@ export default function CultivoManager() {
       });
       return
     }
-    const respuesta = await myFetch("http://localhost:8080/api/v1/addInventario", "POST", inventario)
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/addInventario", "POST", inventario)
     if (respuesta?.estado == "exito") {
       Swal.fire({
         icon: 'success',
@@ -77,7 +77,7 @@ export default function CultivoManager() {
     return true; // Devuelve true si todos los campos están llenos
   };
   const obtenerInventarioXFinca= async()=>{
-    const respuesta = await myFetchGET("http://localhost:8080/api/v1/getInventarioXFinca/"+id)
+    const respuesta = await myFetchGET("https://backnextjs-main-production.up.railway.app/api/v1/getInventarioXFinca/"+id)
     setInventarios(respuesta)
   }
   const confirmarEliminarInventario = (id:number) => {
@@ -99,7 +99,7 @@ export default function CultivoManager() {
 
 
   const handleDelete = async(id: number) => {
-    const respuesta = await myFetch("http://localhost:8080/api/v1/deleteInventario/" + id, "DELETE", {})
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/deleteInventario/" + id, "DELETE", {})
     if (respuesta?.estado == "exito") {
       Swal.fire({
         icon: 'success',

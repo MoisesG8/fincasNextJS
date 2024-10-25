@@ -26,7 +26,7 @@ export default function Finca() {
       const User = JSON.parse(galletaUser)
       finca.productorId = User.id
     }
-    const respuesta = await myFetch("http://localhost:8080/api/v1/addFinca", "POST", finca)
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/addFinca", "POST", finca)
     if (respuesta) {
       if (respuesta?.estado === "exito") {
         Swal.fire({

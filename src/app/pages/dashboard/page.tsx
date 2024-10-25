@@ -76,7 +76,7 @@ export default function Dashboard() {
         
         id = User.id
       }
-      const res: Farm[] = await myFetchGET("http://localhost:8080/api/v1/getFincasDeProductor/"+id)     
+      const res: Farm[] = await myFetchGET("https://backnextjs-main-production.up.railway.app/api/v1/getFincasDeProductor/"+id)     
       console.log(res) 
      
       // myFetch()
@@ -120,7 +120,7 @@ export default function Dashboard() {
     };
 
     try {
-        const response = await fetch('http://localhost:8080/api/v1/generarExcel', {
+        const response = await fetch('https://backnextjs-main-production.up.railway.app/api/v1/generarExcel', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

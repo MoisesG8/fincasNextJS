@@ -32,7 +32,7 @@ export default function Login() {
     }
 
     setCargando(true)
-    const respuesta = await myFetch("http://localhost:8080/api/auth/login", "POST", {
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/auth/login", "POST", {
       "email": email,
       "password": password
     })

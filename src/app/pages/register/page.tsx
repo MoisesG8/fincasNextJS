@@ -47,7 +47,7 @@ export default function Register() {
       });
       return
     }
-    const respuesta = await myFetch("http://localhost:8080/api/v1/addProductor", "POST", formData)
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/addProductor", "POST", formData)
     if (respuesta && respuesta?.id !== null) {
       Swal.fire({
         icon: 'success',
