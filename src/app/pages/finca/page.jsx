@@ -5,18 +5,11 @@ import { useEffect, useState } from 'react';
 import styles from './finca.module.css';
 import { getFarms, deleteFarm } from '../../services/farmService';
 import { useRouter } from 'next/navigation';
-import { myFetch, myFetchGET,getCookie } from '@/app/services/funcionesService';
+import { myFetch, myFetchGET,getCookie } from '../../services/funcionesService';
 import Swal from 'sweetalert2';
-interface Farm {
-  id: number;
-  nombre: string;
-  ubicacion: string;
-  tamanioHectareas: number;
-  cultivo: string;
-}
 
 export default function FarmList() {
-  const [farms, setFarms] = useState<Farm[]>([]);
+  const [farms, setFarms] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const farmsPerPage = 10;
   const router = useRouter();
@@ -35,11 +28,11 @@ export default function FarmList() {
     }
   };
 
-  const handleEdit = (farm: object) => {
+  const handleEdit = (farm) => {
     router.push(`finca/edit?farmId=${farm.fincaId}&nombre=${farm.nombre}&ubicacion=${farm.ubicacion}&tamanioHectareas=${farm.tamanioHectareas}`);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id) => {
     Swal.fire({
       title: 'Eliminar',
       text: 'Desea eliminar la finca?',
@@ -56,8 +49,8 @@ export default function FarmList() {
     });
   };
 
-  const eliminarFinca = async (id: number) => {
-    const respuesta = await myFetch("http://localhost:8080/api/v1/deleteFinca/" + id, "DELETE", {})
+  const eliminarFinca = async (id) => {
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/deleteFinca/" + id, "DELETE", {})
     if (respuesta?.estado == "exito") {
       Swal.fire({
         icon: 'success',
@@ -76,15 +69,15 @@ export default function FarmList() {
     }
   }
 
-  const handleViewCultivo = (farmId: number) => {
+  const handleViewCultivo = (farmId) => {
     router.push(`finca/cultivos?farmId=${farmId}`);
   };
 
-  const handleViewInventarios = (farmId: number) => {
+  const handleViewInventarios = (farmId) => {
     router.push(`finca/inventario?farmId=${farmId}`);
   };
 
-  const handleViewPlanificaciones = (farmId: number) => {
+  const handleViewPlanificaciones = (farmId) => {
     router.push(`finca/planificaciones?farmId=${farmId}`);
   };
 
@@ -96,7 +89,7 @@ export default function FarmList() {
   const indexOfFirstFarm = indexOfLastFarm - farmsPerPage;
   const currentFarms = farms.slice(indexOfFirstFarm, indexOfLastFarm);
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
 
 
@@ -108,7 +101,7 @@ export default function FarmList() {
       
       id = User.id
     }
-    const res: Farm[] = await myFetchGET("http://localhost:8080/api/v1/getFincasDeProductor/"+id)
+    const res = await myFetchGET("https://backnextjs-main-production.up.railway.app/api/v1/getFincasDeProductor/"+id)
     if (res) {
       setFarms(res)
     }

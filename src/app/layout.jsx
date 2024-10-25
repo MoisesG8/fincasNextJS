@@ -2,7 +2,7 @@
 "use client"
 import './globals.css';
 import React, { useState, useEffect } from "react";
-import { AuthContextV2 } from '@/context/AuthContextV2';
+import { AuthContextV2 } from '../context/AuthContextV2';
 import { useRouter } from 'next/navigation';
 import Login from './pages/login/page';
 import Dashboard from './pages/dashboard/page';
@@ -11,7 +11,7 @@ import FarmList from './pages/finca/page';
 import { eliminarCookie, getCookie, isTokenValid, setCookie } from './services/funcionesService';
 
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }) {
   const router = useRouter();
   const [acceso, setAcceso] = useState(false);
   const [user, setUser] = useState(false);

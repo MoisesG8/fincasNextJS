@@ -1,14 +1,6 @@
-// /services/farmService.ts
-export interface Farm {
-    id: number;
-    nombre: string;
-    ubicacion: string;
-    tamanioHectareas: number;
-    cultivo: string;
-  }
-  
+
   // Datos simulados
-  let farms: Farm[] = [
+  let farms = [
     { id: 1, nombre: 'Finca El Paraiso', ubicacion: 'Guatemala', tamanioHectareas: 10, cultivo: 'Café' },
     { id: 2, nombre: 'Finca La Esperanza', ubicacion: 'Jutiapa', tamanioHectareas: 15, cultivo: 'Plátano' },
     { id: 3, nombre: 'Finca El Paraiso', ubicacion: 'Guatemala', tamanioHectareas: 10, cultivo: 'Café' },
@@ -30,14 +22,14 @@ export interface Farm {
   ];
   
   // Obtener todas las fincas
-  export const getFarms = async (): Promise<Farm[]> => {
+  export const getFarms = async () => {
     return new Promise((resolve) => {
       setTimeout(() => resolve(farms), 1000);
     });
   };
   
   // Eliminar una finca
-  export const deleteFarm = async (id: number): Promise<void> => {
+  export const deleteFarm = async (id) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         farms = farms.filter((farm) => farm.id !== id);

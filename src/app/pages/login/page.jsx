@@ -7,8 +7,8 @@ import { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 //import { useAuth } from '../../../context/AuthContext'; // Importa el contexto de autenticación
 import Swal from 'sweetalert2';
-import { myFetch, setCookie } from '@/app/services/funcionesService';
-import { AuthContextV2 } from '@/context/AuthContextV2';
+import { myFetch, setCookie } from '../../services/funcionesService';
+import { AuthContextV2 } from '../../../context/AuthContextV2';
 export default function Login() {
   /*Contexto*/
   const { acceso, setAcceso, setUser } = useContext(AuthContextV2);

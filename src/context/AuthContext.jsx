@@ -2,32 +2,15 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Define la interfaz User
-interface User {
-  id: number;
-  nombre: string;
-  apellido: string;
-  usuario: string;
-  email: string;
-  contacto: string;
-  ubicacion: string;
-}
-
-// Define la interfaz para el contexto de autenticación
-interface AuthContextType {
-  user: User | null; // El usuario puede ser null si no hay sesión
-  login: (email: string, password: string) => Promise<void>; // Función para iniciar sesión
-  logout: () => void; // Función para cerrar sesión
-}
 
 // Crea el contexto
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Proveedor del contexto
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState;
 
-  const login = async (email: string, password: string) => {
+  const login = async (email, password) => {
     const response = await fetch('https://backnextjs-main-production.up.railway.app/api/auth/login', {
       method: 'POST',
       headers: {

@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import styles from './finca.edit.module.css';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
-import { getCookie, myFetch } from '@/app/services/funcionesService';
+import { getCookie, myFetch } from '../../../services/funcionesService';
+import React from 'react';
 
 export default function Finca() {
   const [finca, setFinca] = useState({
@@ -18,7 +19,7 @@ export default function Finca() {
   const searchParams = useSearchParams();
 
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFinca({ ...finca, [name]: value });
   };
@@ -59,9 +60,9 @@ export default function Finca() {
 
   useEffect(() => {
     setFinca({
-      nombre: searchParams.get('nombre'),
-      ubicacion: searchParams.get('ubicacion'),
-      tamanoHectarea: searchParams.get('tamanioHectareas'),
+      nombre: searchParams.get('nombre') || '',
+      ubicacion: searchParams.get('ubicacion') || '',
+      tamanoHectarea: Number(searchParams.get('tamanioHectareas')) || 0,
       fechaRegistro: '',
     })
   }, [])

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './Register.module.css';
 import Swal from 'sweetalert2';
-import { myFetch } from '@/app/services/funcionesService';
+import { myFetch } from '../../services/funcionesService';
 
 export default function Register() {
   //const { login } = useAuth();
@@ -21,7 +21,7 @@ export default function Register() {
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };

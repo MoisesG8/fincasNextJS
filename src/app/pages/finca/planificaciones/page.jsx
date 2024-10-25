@@ -4,15 +4,9 @@ import { useState, useEffect } from 'react';
 import styles from './finca.planificaciones.module.css';
 import { useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
-import { myFetch, myFetchGET } from '@/app/services/funcionesService';
+import { myFetch, myFetchGET } from '../../../services/funcionesService';
 import { useRouter } from 'next/navigation';
-interface Planificacion {
-  finca_id: any;
-  actividad: string;
-  fecha_inicio: Date;
-  fecha_fin: Date;
-  estado: string;
-}
+
 
 export default function PlanificacionesManager() {
   const router = useRouter();
@@ -20,29 +14,30 @@ export default function PlanificacionesManager() {
   const [actividad, setActividad] = useState('');
   const [fecha, setFecha] = useState('');
   const [observacion, setObservacion] = useState('');
-  const [planificacion, setPlanificacion] = useState<Planificacion>({
-    finca_id: 0,
-    actividad: '',
-    fecha_inicio: new Date(),
-    fecha_fin: new Date(),
-    estado: ''
-  });
 
-  const [planificaciones, setPlanificaciones] = useState<Planificacion[]>([]);
+const [planificacion, setPlanificacion] = useState({
+  finca_id: 0,
+  actividad: '',
+  fecha_inicio: new Date().toISOString().split('T')[0], // Para que sea un formato válido de input type="date"
+  fecha_fin: new Date().toISOString().split('T')[0], // Igual aquí
+  estado: ''
+});
+
+  const [planificaciones, setPlanificaciones] = useState([]);
 
   const [isEditing, setIsEditing] = useState(false);
 
   const searchParams = useSearchParams();
   const id = searchParams.get('farmId');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setPlanificacion((prev) => ({ ...prev, [name]: value }));
   };
 
 
 
-  const confirmarEliminarCultivo = (id: number) => {
+  const confirmarEliminarCultivo = (id) => {
     Swal.fire({
       title: 'Eliminar',
       text: 'Desea eliminar la planificacion?',
@@ -59,7 +54,7 @@ export default function PlanificacionesManager() {
     });
   }
 
-  const abrirModalAgregarSeguimiento = (item: any) => {
+  const abrirModalAgregarSeguimiento = (item) => {
     Swal.fire({
       title: 'Agregar Seguimiento',
       html: `
@@ -99,7 +94,7 @@ export default function PlanificacionesManager() {
   }
 
 
-  const agregarSeguimiento = async (_actividad: string, _fecha: string, _observacion: string, _planificacionID: number) => {
+  const agregarSeguimiento = async (_actividad, _fecha, _observacion, _planificacionID) => {
     let objetoPeticion = {
       planificacion_id: _planificacionID,
       fecha: _fecha,
@@ -107,7 +102,7 @@ export default function PlanificacionesManager() {
       observaciones: _observacion
     }
 
-    const respuesta = await myFetch("http://localhost:8080/api/v1/addSeguimiento", "POST", objetoPeticion);
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/addSeguimiento", "POST", objetoPeticion);
     if (respuesta?.estado === "exito") {
       Swal.fire({
         icon: 'success',
@@ -126,8 +121,8 @@ export default function PlanificacionesManager() {
   };
 
 
-  const handleDelete = async (id: number) => {
-    const respuesta = await myFetch("http://localhost:8080/api/v1/deletePlanificacion/" + id, "DELETE", {})
+  const handleDelete = async (id) => {
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/deletePlanificacion/" + id, "DELETE", {})
     if (respuesta?.estado == "exito") {
       Swal.fire({
         icon: 'success',
@@ -166,7 +161,7 @@ export default function PlanificacionesManager() {
       });
       return
     }
-    const respuesta = await myFetch("http://localhost:8080/api/v1/addPlanificacion", "POST", planificacion)
+    const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/addPlanificacion", "POST", planificacion)
     if (respuesta?.estado == "exito") {
       Swal.fire({
         icon: 'success',
@@ -188,11 +183,11 @@ export default function PlanificacionesManager() {
   }
 
   const obtenerPlanificacionXFinca = async () => {
-    const respuesta = await myFetchGET("http://localhost:8080/api/v1/getPlanificacionXFinca/" + id)
+    const respuesta = await myFetchGET("https://backnextjs-main-production.up.railway.app/api/v1/getPlanificacionXFinca/" + id)
     setPlanificaciones(respuesta)
   }
 
-  const mostrarPlanificaciones = async (item: any) => {
+  const mostrarPlanificaciones = async (item) => {
 
     const idPlanificacion = item.planificacionId
     Swal.fire({
@@ -201,7 +196,7 @@ export default function PlanificacionesManager() {
       text: 'El registro ha sido guardado exitosamente',
       confirmButtonColor: '#6b4226',
     });
-    const res: any[] = await myFetchGET("http://localhost:8080/api/v1/getSeguimientoXPlanificacion/" + idPlanificacion)
+    const res = await myFetchGET("https://backnextjs-main-production.up.railway.app/api/v1/getSeguimientoXPlanificacion/" + idPlanificacion)
     if (res.length == 0) {
       Swal.fire({
         icon: 'success',

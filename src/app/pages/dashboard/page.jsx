@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import styles from './dashboard.module.css';
-import { AuthContextV2 } from '@/context/AuthContextV2';
+import { AuthContextV2 } from '../../../context/AuthContextV2';
 import { useContext } from "react";
-import { eliminarCookie, myFetchGET, getCookie } from '@/app/services/funcionesService';
+import { eliminarCookie, myFetchGET, getCookie } from '../../services/funcionesService';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
 export default function Dashboard() {
@@ -76,7 +76,7 @@ export default function Dashboard() {
         
         id = User.id
       }
-      const res: Farm[] = await myFetchGET("https://backnextjs-main-production.up.railway.app/api/v1/getFincasDeProductor/"+id)     
+      const res = await myFetchGET("https://backnextjs-main-production.up.railway.app/api/v1/getFincasDeProductor/"+id)     
       console.log(res) 
      
       // myFetch()
@@ -113,7 +113,7 @@ export default function Dashboard() {
   };
   
 
-  const handleDownload = async (idFinca:any,idProductor:any) => {
+  const handleDownload = async (idFinca,idProductor) => {
     const data = {
         idFinca:Number(idFinca),
         idProductor: Number(idProductor)

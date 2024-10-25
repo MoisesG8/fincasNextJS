@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-export const setCookie = (name: string, token: string, days: number): void => {
+export const setCookie = (name, token, days) => {
     const d = new Date();
     d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000)); // Convertir días a milisegundos
     const expires = `expires=${d.toUTCString()}`;
@@ -7,7 +7,7 @@ export const setCookie = (name: string, token: string, days: number): void => {
 }
 
 
-export const getCookie = (name: string): string | null => {
+export const getCookie = (name) => {
     const cookieArr = document.cookie.split(';');
     for (let i = 0; i < cookieArr.length; i++) {
         const cookiePair = cookieArr[i].trim();
@@ -18,14 +18,14 @@ export const getCookie = (name: string): string | null => {
     return null; // Cookie no encontrada
 }
 
-export const eliminarCookie = (nombre: string) => {
+export const eliminarCookie = (nombre) => {
     document.cookie = `${nombre}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
 };
 
 
-export const isTokenValid = (token: string): boolean => {
+export const isTokenValid = (token) => {
     try {
-        const decoded = jwt.decode(token) as { exp?: number };
+        const decoded = jwt.decode(token);
 
         // Verificar si el token tiene una propiedad "exp" y si no ha expirado
         if (decoded.exp) {
@@ -37,8 +37,8 @@ export const isTokenValid = (token: string): boolean => {
     }
 
 }
-export const myFetch = async <T>(ruta: string, method: string, data: Object): Promise<T> => {
-    const config: RequestInit = {
+export const myFetch = async (ruta, method, data) => {
+    const config = {
         method: method,
         body: JSON.stringify(data),
         headers: {
@@ -53,7 +53,7 @@ export const myFetch = async <T>(ruta: string, method: string, data: Object): Pr
             throw new Error(`Error: ${respuesta.status} ${respuesta.statusText}`);
         }
 
-        const respuestaJson: T = await respuesta.json();
+        const respuestaJson = await respuesta.json();
         return respuestaJson;
     } catch (error) {
         return Promise.reject(error);
@@ -61,10 +61,10 @@ export const myFetch = async <T>(ruta: string, method: string, data: Object): Pr
 };
 
 
-export const myFetchGET = (ruta: string) => {
+export const myFetchGET = (ruta) => {
     return new Promise(async function (resolve, reject) {
         var Config = {
-            method: 'GET',
+            method: 'GET',  
             headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json"

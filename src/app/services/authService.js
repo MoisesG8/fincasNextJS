@@ -1,6 +1,6 @@
-export async function login(email: string, password: string) {
+export async function login(email, password) {
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      const response = await fetch('https://backnextjs-main-production.up.railway.app/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ export async function login(email: string, password: string) {
     }
   }
 
-  export async function register(userData: any) {
+  export async function register(userData) {
     try {
       const response = await fetch('/api/register', {
         method: 'POST',

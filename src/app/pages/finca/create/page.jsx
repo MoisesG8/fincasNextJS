@@ -4,7 +4,7 @@ import { useState } from 'react';
 import styles from './finca.create.module.css';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
-import { getCookie, myFetch } from '@/app/services/funcionesService';
+import { getCookie, myFetch } from '../../../services/funcionesService';
 export default function Finca() {
   const [finca, setFinca] = useState({
     productorId: 0,
@@ -14,7 +14,7 @@ export default function Finca() {
   });
   const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFinca({ ...finca, [name]: value });
   };

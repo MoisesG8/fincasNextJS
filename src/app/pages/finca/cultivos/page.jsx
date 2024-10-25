@@ -5,17 +5,11 @@ import styles from './finca.cultivos.module.css';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
-import { myFetch, myFetchGET } from '@/app/services/funcionesService';
-interface Cultivo {
-  finca_id: any;
-  variedad: string;
-  estado: string;
-  fecha: string
-}
+import { myFetch, myFetchGET } from '../../../services/funcionesService';
 
 export default function CultivoManager() {
   const router = useRouter();
-  const [cultivo, setCultivo] = useState<Cultivo>({
+  const [cultivo, setCultivo] = useState({
     finca_id: 0,
     variedad: '',
     estado: '',
@@ -25,17 +19,17 @@ export default function CultivoManager() {
   const searchParams = useSearchParams();
   const id = searchParams.get('farmId');
 
-  const [cultivos, setCultivos] = useState<Cultivo[]>([]);
+  const [cultivos, setCultivos] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
 
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setCultivo((prev) => ({ ...prev, [name]: value }));
   };
 
 
-  const handleDelete = async(id: number) => {
+  const handleDelete = async(id) => {
     const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/deleteCultivo/" + id, "DELETE", {})
     if (respuesta?.estado == "exito") {
       Swal.fire({
@@ -100,7 +94,7 @@ export default function CultivoManager() {
     obtenerCultivosXFinca();
   },[])
 
-  const confirmarEliminarCultivo = (id:number) => {
+  const confirmarEliminarCultivo = (id) => {
     Swal.fire({
       title: 'Eliminar',
       text: 'Desea eliminar el cultivo?',

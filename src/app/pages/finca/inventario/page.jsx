@@ -5,26 +5,19 @@ import styles from './finca.inventario.module.css';
 import { useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
-import { myFetch, myFetchGET } from '@/app/services/funcionesService';
-
-interface Inventario {
-  id: number;
-  producto: string;
-  cantidad: number;
-  unidad: string;
-  finca_id: number;
-}
+import { myFetch, myFetchGET } from '../../../services/funcionesService';
+import React from 'react';
 
 export default function CultivoManager() {
   // Estado para el formulario de cultivo
-  const [inventario, setInventario] = useState<Inventario>({
-    id: 0,
+  const [inventario, setInventario] = useState({
+    inventarioId: 0,
     producto: '',
     cantidad: 0,
     unidad: '',
     finca_id: 0
   });
-  const [inventarios, setInventarios] = useState<Inventario[]>([]);
+  const [inventarios, setInventarios] = useState([]);
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get('farmId');
@@ -32,14 +25,15 @@ export default function CultivoManager() {
 
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setInventario((prev) => ({ ...prev, [name]: value }));
   };
 
 
   const agregarInventario = async () => {
-    inventario.finca_id = searchParams.get('farmId');
+    const farmId = searchParams.get('farmId');
+    inventario.finca_id = farmId ? parseInt(farmId, 10) : 0;
     if (!validarObjeto(inventario)) {
       Swal.fire({
         icon: 'error',
@@ -78,9 +72,10 @@ export default function CultivoManager() {
   };
   const obtenerInventarioXFinca= async()=>{
     const respuesta = await myFetchGET("https://backnextjs-main-production.up.railway.app/api/v1/getInventarioXFinca/"+id)
+    console.log("Respuesta:", respuesta)
     setInventarios(respuesta)
   }
-  const confirmarEliminarInventario = (id:number) => {
+  const confirmarEliminarInventario = (id) => {
     Swal.fire({
       title: 'Eliminar',
       text: 'Desea eliminar el inventario?',
@@ -98,7 +93,8 @@ export default function CultivoManager() {
   }
 
 
-  const handleDelete = async(id: number) => {
+  const handleDelete = async(id) => {
+    console.log("ID a eliminar:", id);
     const respuesta = await myFetch("https://backnextjs-main-production.up.railway.app/api/v1/deleteInventario/" + id, "DELETE", {})
     if (respuesta?.estado == "exito") {
       Swal.fire({
@@ -166,7 +162,7 @@ export default function CultivoManager() {
       <h3>Inventario</h3>
       <ul className={styles.list}>
         {inventarios.map((c) => (
-          <li key={c.id}>
+          <li key={c.inventarioId}>
             <strong>{c.producto}</strong> ({c.cantidad}) - {' '}
             {c.unidad}
             <div className={styles.actions}>
