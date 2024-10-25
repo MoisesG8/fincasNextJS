@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import styles from './finca.planificaciones.module.css';
 import { useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
@@ -261,6 +261,7 @@ const [planificacion, setPlanificacion] = useState({
     obtenerPlanificacionXFinca();
   }, [])
   return (
+    <Suspense fallback = {<div>Cargando...</div>}>
     <div className={styles.container}>
       <h2>{isEditing ? 'Editar Planificacion' : 'Registrar Planificacion'}</h2>
       <div className={styles.form}>
@@ -329,5 +330,6 @@ const [planificacion, setPlanificacion] = useState({
         ))}
       </ul>
     </div>
+    </Suspense>
   );
 }
